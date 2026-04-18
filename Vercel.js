@@ -2,7 +2,8 @@
   "version": 2,
   "functions": {
     "api/bypass.js": {
-      "maxDuration": 15
+      "runtime": "nodejs20.x",
+      "maxDuration": 10
     }
   }
 }
