@@ -1,5 +1,5 @@
-// api/bypass.js — Vercel Serverless Function
-// FayintzBypass | Powered by BaconBypass + bypass.vip
+// api/bypass.js — Vercel Serverless Function (CommonJS)
+// FayintzBypass | BaconBypass + bypass.vip + bypass.city + bypass.bot.nu
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36';
 
@@ -9,7 +9,8 @@ async function tryBacon(url) {
     apikey: 'Bacon-1db972aa217f4ffe58dc-24fa4c1b89cd8a330bad'
   });
   const res = await fetch(`https://baconbypass.online/bypass?${params}`, {
-    headers: { 'User-Agent': UA }
+    headers: { 'User-Agent': UA },
+    signal: AbortSignal.timeout(10000)
   });
   const data = await res.json();
   if (data.status === 'success' && data.result) return data.result;
@@ -18,7 +19,8 @@ async function tryBacon(url) {
 
 async function tryBypassVip(url) {
   const res = await fetch(`https://bypass.vip/bypass?url=${encodeURIComponent(url)}`, {
-    headers: { 'User-Agent': UA, 'Accept': 'application/json' }
+    headers: { 'User-Agent': UA, 'Accept': 'application/json' },
+    signal: AbortSignal.timeout(10000)
   });
   const data = await res.json();
   const result = data.result || data.bypassed || data.url || data.destination;
@@ -28,7 +30,8 @@ async function tryBypassVip(url) {
 
 async function tryBypassCity(url) {
   const res = await fetch(`https://api.bypass.city/bypass?url=${encodeURIComponent(url)}`, {
-    headers: { 'User-Agent': UA }
+    headers: { 'User-Agent': UA },
+    signal: AbortSignal.timeout(10000)
   });
   const data = await res.json();
   const result = data.result || data.bypassed || data.url;
@@ -38,7 +41,8 @@ async function tryBypassCity(url) {
 
 async function tryBypassBot(url) {
   const res = await fetch(`https://bypass.bot.nu/bypass2?url=${encodeURIComponent(url)}`, {
-    headers: { 'User-Agent': UA }
+    headers: { 'User-Agent': UA },
+    signal: AbortSignal.timeout(10000)
   });
   const data = await res.json();
   const result = data.result || data.bypassed || data.url;
@@ -53,15 +57,12 @@ const NODES = [
   { name: 'bypass.bot.nu', fn: tryBypassBot }
 ];
 
-export default async function handler(req, res) {
-  // CORS headers
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Content-Type', 'application/json');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
 
   const { url } = req.query;
 
@@ -89,4 +90,4 @@ export default async function handler(req, res) {
     message: 'All bypass nodes failed',
     details: errors
   });
-}
+};
